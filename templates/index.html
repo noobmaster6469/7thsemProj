@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Face Recognition System</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Face Recognition System</h1>
+      <form>
+        <label for="user_id">Select Registered User:</label>
+        <select name="user_id" id="user_id">
+          {% if users %} {% for user in users %}
+          <option value="{{ user[0] }}">{{ user[1] }}</option>
+          {% endfor %} {% else %}
+          <option disabled>No users found</option>
+          {% endif %}
+        </select>
+        <button type="button" onclick="startStream()">Start Search</button>
+      </form>
+      <a href="{{ url_for('register') }}">Register New User</a>
+
+      <h2>Camera Feeds</h2>
+      <div style="display: flex" class="video-section">
+        <img height="400" width="600" id="video1" alt="Video Feed 1" />
+        <img height="400" width="600" id="video2" alt="Video Feed 2" />
+      </div>
+    </div>
+
+    <script>
+      function startStream() {
+        const userId = document.getElementById("user_id").value;
+        document.getElementById("video1").src = "/video_feed/" + userId + "/0";
+        document.getElementById("video2").src = "/video_feed/" + userId + "/1";
+      }
+    </script>
+  </body>
+</html>
