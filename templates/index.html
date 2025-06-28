@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <title>Face Recognition System</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
@@ -10,35 +11,93 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+        background: #111;
+        color: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .card {
+        max-width: 760px;
+        width: 100%;
+        padding: 2rem;
+        margin-top: 2rem;
+        background: #1e1e1e;
+        border-radius: 1rem;
+        box-shadow: 0 0 15px #0008;
+      }
+      select,
+      button,
+      a {
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        border: none;
+        font-size: 1rem;
+      }
+      button {
+        background: #3b82f6;
+        color: #fff;
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+      button:hover {
+        background: #2563eb;
+      }
+      a {
+        background: #4ade80;
+        color: #000;
+        text-decoration: none;
+        margin-left: 0.5rem;
+      }
+      h1 {
+        margin-bottom: 1rem;
+      }
+      #videoBox {
+        margin-top: 1.5rem;
+      }
+      .func {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
+    <div class="card">
       <h1>Face Recognition System</h1>
-      <form>
-        <label for="user_id">Select Registered User:</label>
-        <select name="user_id" id="user_id">
-          {% if users %} {% for user in users %}
-          <option value="{{ user[0] }}">{{ user[1] }}</option>
-          {% endfor %} {% else %}
-          <option disabled>No users found</option>
-          {% endif %}
+      <div>
+        <label for="user_id">Select User:</label>
+        <select id="user_id">
+          {% for id, name in users %}
+          <option value="{{ id }}">{{ name }}</option>
+          {% else %}
+          <option disabled>No users</option>
+          {% endfor %}
         </select>
-        <button type="button" onclick="startStream()">Start Search</button>
-      </form>
-      <a href="{{ url_for('register') }}">Register New User</a>
-
-      <h2>Camera Feeds</h2>
-      <div style="display: flex" class="video-section">
-        <img height="400" width="600" id="video1" alt="Video Feed 1" />
-        <img height="400" width="600" id="video2" alt="Video Feed 2" />
+        <button onclick="startStream()">Start Search</button>
+        <div class="func">
+          <a href="{{ url_for('register') }}">Register</a>
+          <a href="{{ url_for('attendance_page') }}">Attendance Live</a>
+        </div>
+      </div>
+      <div id="videoBox">
+        <img
+          id="video"
+          width="640"
+          height="480"
+          alt="Camera feed will appear here"
+        />
       </div>
     </div>
-
     <script>
       function startStream() {
-        const userId = document.getElementById("user_id").value;
-        document.getElementById("video1").src = "/video_feed/" + userId + "/0";
-        document.getElementById("video2").src = "/video_feed/" + userId + "/1";
+        const uid = document.getElementById("user_id").value;
+        document.getElementById("video").src = `/camera_feed/${uid}`;
       }
     </script>
   </body>

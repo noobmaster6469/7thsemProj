@@ -17,9 +17,11 @@
       <form method="POST" action="/register">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name" required />
-        <button type="submit">Register (Press 'q' in camera window)</button>
+        <button type="submit">
+          Register (Press 'c' or 'q' in camera window)
+        </button>
       </form>
-      <a href="{{ url_for('index') }}">Back to Home</a>
+      <a href="{{ url_for('home') }}">Back to Home</a>
     </div>
   </body>
 </html>

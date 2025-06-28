@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Attendance Live</title>
+    <style>
+      body {
+        background: #111;
+        font-family: "Roboto", sans-serif;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2rem;
+      }
+      video,
+      img {
+        border: 2px solid #4ade80;
+        border-radius: 8px;
+      }
+      h1 {
+        margin-bottom: 1rem;
+      }
+      .nav {
+        margin-bottom: 1rem;
+      }
+      .nav a {
+        background: #3b82f6;
+        color: white;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <a href="{{ url_for('home') }}">← Back to Home</a>
+    </div>
+    <h1>Attendance Live</h1>
+    <img
+      src="{{ url_for('attendance_run') }}"
+      width="640"
+      height="480"
+      alt="Attendance Stream"
+    />
+    <h2>Present Users Today</h2>
+    <ul id="present-list">
+      {% for name in present_names %}
+      <li>{{ name }}</li>
+      {% else %}
+      <li>No one marked present yet.</li>
+      {% endfor %}
+    </ul>
+  </body>
+
+  <script>
+    async function updatePresentUsers() {
+      try {
+        const res = await fetch("/api/present-users");
+        const data = await res.json();
+        const list = document.getElementById("present-list");
+        list.innerHTML = "";
+
+        if (data.present.length === 0) {
+          list.innerHTML = "<li>No one marked present yet.</li>";
+        } else {
+          data.present.forEach((name) => {
+            const li = document.createElement("li");
+            li.textContent = name;
+            list.appendChild(li);
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch present users:", err);
+      }
+    }
+
+    // Call once immediately, then every 5 seconds
+    updatePresentUsers();
+    setInterval(updatePresentUsers, 5000);
+  </script>
+</html>
