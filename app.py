@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-"""AI Attendance + Search System (no external ML libs)
-Author: ChatGPT helper
-Updated: 2025‑06‑28 — single‑shot registration (press **c** once).
-"""
+
 
 from __future__ import annotations
 
@@ -24,7 +20,8 @@ from flask import (
 )
 
 DB_PATH = Path("users.db")
-THRESH = 0.60  # tunable Euclidean distance threshold
+THRESH = 0.6  # Stricter matching for better accuracy
+
 CASCADE_PATH = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
 
 app = Flask(__name__)
@@ -91,10 +88,17 @@ face_cascade = cv2.CascadeClassifier(CASCADE_PATH)
 
 def vectorise_face(face_bgr: np.ndarray) -> np.ndarray:
     gray = cv2.cvtColor(face_bgr, cv2.COLOR_BGR2GRAY)
-    thumb = cv2.resize(gray, (16, 8), interpolation=cv2.INTER_AREA)  # 128‑pix
-    vec = thumb.flatten().astype("float32")
+    resized = cv2.resize(gray, (32, 32), interpolation=cv2.INTER_AREA)
+
+    # Use Sobel filters to capture edges
+    sobelx = cv2.Sobel(resized, cv2.CV_32F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(resized, cv2.CV_32F, 0, 1, ksize=3)
+    edges = np.sqrt(sobelx**2 + sobely**2)
+
+    vec = edges.flatten().astype("float32")
     norm = np.linalg.norm(vec) or 1.0
     return vec / norm
+
 
 
 def closest_user(vec: np.ndarray, encs):
